@@ -87,13 +87,6 @@ class Metaworld(tfds.core.GeneratorBasedBuilder):
                 }),
             }))
 
-    def _split_generators(self, dl_manager: tfds.download.DownloadManager):
-        """Define data splits."""
-        return {
-            'train': self._generate_examples(path='data/train/episode_*.npy'),
-            # 'val': self._generate_examples(path='data/val/episode_*.npy'),
-        }
-
     def _generate_examples(self, path) -> Iterator[Tuple[str, Any]]:
         """Generator of examples for each split."""
 
@@ -148,3 +141,9 @@ class Metaworld(tfds.core.GeneratorBasedBuilder):
         #         | beam.Map(_parse_example)
         # )
 
+    def _split_generators(self, dl_manager: tfds.download.DownloadManager):
+        """Define data splits."""
+        return {
+            'train': self._generate_examples(path='data/train/episode_*.npy'),
+            # 'val': self._generate_examples(path='data/val/episode_*.npy'),
+        }
