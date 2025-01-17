@@ -18,7 +18,7 @@ class Metaworld(tfds.core.GeneratorBasedBuilder):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # self._embed = hub.load("https://tfhub.dev/google/universal-sentence-encoder-large/5")
-        self._embed = hub.load("/home/xiangtianyu/jinaoqun/models/universal-sentence-encoder-tensorflow2-large-v2")
+        self._embed = hub.load("/path/to/models/universal-sentence-encoder-tensorflow2-large-v2")
 
     def _info(self) -> tfds.core.DatasetInfo:
         """Dataset metadata (homepage, citation,...)."""
