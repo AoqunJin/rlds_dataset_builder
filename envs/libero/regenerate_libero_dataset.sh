@@ -2,7 +2,7 @@
 
 # Defining a Task List
 task_suites=("libero_spatial" "libero_object" "libero_goal" "libero_10" "libero_90")
-raw_data_dir="/data/xtydata/libero/datasets"
+raw_data_dir="/path/to/libero/datasets"
 target_dir_suffix="_no_noops"
 
 # Iterate through the list of tasks and execute commands

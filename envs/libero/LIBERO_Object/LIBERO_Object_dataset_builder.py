@@ -6,6 +6,7 @@ import glob
 import numpy as np
 import tensorflow as tf
 import tensorflow_datasets as tfds
+import tensorflow_hub as hub
 import sys
 from LIBERO_Object.conversion_utils import MultiThreadedDatasetBuilder
 
@@ -14,6 +15,8 @@ def _generate_examples(paths) -> Iterator[Tuple[str, Any]]:
     """Yields episodes for list of data paths."""
     # the line below needs to be *inside* generate_examples so that each worker creates it's own model
     # creating one shared model outside this function would cause a deadlock
+    # _embed = hub.load("https://tfhub.dev/google/universal-sentence-encoder-large/5")
+    _embed = hub.load("/path/to/models/universal-sentence-encoder-tensorflow2-large-v2")
 
     def _parse_example(episode_path, demo_id):
         # load raw data
@@ -55,6 +58,7 @@ def _generate_examples(paths) -> Iterator[Tuple[str, Any]]:
                 'is_last': i == (actions.shape[0] - 1),
                 'is_terminal': i == (actions.shape[0] - 1),
                 'language_instruction': command,
+                'language_embedding': _embed([command])[0].numpy()
             })
 
         # create output data sample
@@ -89,8 +93,8 @@ class LIBEROObject(MultiThreadedDatasetBuilder):
     RELEASE_NOTES = {
       '1.0.0': 'Initial release.',
     }
-    N_WORKERS = 40             # number of parallel workers for data conversion
-    MAX_PATHS_IN_MEMORY = 80   # number of paths converted & stored in memory before writing to disk
+    N_WORKERS = 20             # number of parallel workers for data conversion
+    MAX_PATHS_IN_MEMORY = 40   # number of paths converted & stored in memory before writing to disk
                                # -> the higher the faster / more parallel conversion, adjust based on avilable RAM
                                # note that one path may yield multiple episodes and adjust accordingly
     PARSE_FCN = _generate_examples      # handle to parse function from file paths to RLDS episodes
@@ -152,6 +156,12 @@ class LIBEROObject(MultiThreadedDatasetBuilder):
                     'language_instruction': tfds.features.Text(
                         doc='Language Instruction.'
                     ),
+                    'language_embedding': tfds.features.Tensor(
+                        shape=(512,),
+                        dtype=np.float32,
+                        doc='Kona language embedding. '
+                            'See https://tfhub.dev/google/universal-sentence-encoder-large/5'
+                    ),
                 }),
                 'episode_metadata': tfds.features.FeaturesDict({
                     'file_path': tfds.features.Text(
@@ -163,5 +173,5 @@ class LIBEROObject(MultiThreadedDatasetBuilder):
     def _split_paths(self):
         """Define filepaths for data splits."""
         return {
-            "train": glob.glob("/data/xtydata/libero/datasets/libero_object_no_noops/*.hdf5"),
+            "train": glob.glob("/path/to/libero/datasets/libero_object_no_noops/*.hdf5"),
         }

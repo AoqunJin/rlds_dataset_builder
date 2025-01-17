@@ -3,22 +3,29 @@ import random
 import numpy as np
 import tqdm
 import os
+import shutil
 
 from mw_tools import POLICIES, setup_metaworld_env
 
 # Parameters
-N_TRAIN_EPISODES = 20
-# N_TEST_EPISODES = 20
+N_TRAIN_EPISODES = 100
+N_TEST_EPISODES = 50
 EPISODE_LENGTH = 500
 
 # Data directories
 TRAIN_DIR = 'data/train'
-# TEST_DIR = 'data/test'
+TEST_DIR = 'data/test'
+
+if os.path.exists(TRAIN_DIR):
+    shutil.rmtree(TRAIN_DIR)
+if os.path.exists(TEST_DIR):
+    shutil.rmtree(TEST_DIR)
+
 os.makedirs(TRAIN_DIR, exist_ok=True)
-# os.makedirs(TEST_DIR, exist_ok=True)
+os.makedirs(TEST_DIR, exist_ok=True)
 
 # Initialize Metaworld environments
-benchmark = _env_dict.ML10_V2  # Construct the benchmark
+benchmark = _env_dict.ML45_V2  # Construct the benchmark
 
 def collect_episode(env, policy, instruction, episode_length, path):
     """Collect data for a single episode and save it as an .npy file."""
@@ -67,19 +74,17 @@ for name in benchmark['train'].keys():
     training_env_names.append(name)
 
 # Testing environments
-# testing_envs = []
-# testing_env_names = []
-# for name, env_cls in benchmark['test'].items():
-#     env = env_cls()
-#     task = random.choice([task for task in benchmark.test_tasks if task.env_name == name])
-#     env.set_task(task)
-#     testing_envs.append(env)
-# testing_env_names.append(name)
+testing_envs = []
+testing_env_names = []
+for name in benchmark['test'].keys():
+    env = setup_metaworld_env(name + '-goal-observable')    
+    testing_envs.append(env)
+    testing_env_names.append(name)
 
 # Collect training data
 collect_data(training_envs, training_env_names, N_TRAIN_EPISODES, TRAIN_DIR, EPISODE_LENGTH)
 
 # Collect testing data
-# collect_data(testing_envs, testing_env_names, N_TEST_EPISODES, TEST_DIR, EPISODE_LENGTH)
+collect_data(testing_envs, testing_env_names, N_TEST_EPISODES, TEST_DIR, EPISODE_LENGTH)
 
 print('Data collection complete!')

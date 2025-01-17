@@ -17,7 +17,8 @@ class Metaworld(tfds.core.GeneratorBasedBuilder):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._embed = hub.load("https://tfhub.dev/google/universal-sentence-encoder-large/5")
+        # self._embed = hub.load("https://tfhub.dev/google/universal-sentence-encoder-large/5")
+        self._embed = hub.load("/home/xiangtianyu/jinaoqun/models/universal-sentence-encoder-tensorflow2-large-v2")
 
     def _info(self) -> tfds.core.DatasetInfo:
         """Dataset metadata (homepage, citation,...)."""
@@ -93,12 +94,14 @@ class Metaworld(tfds.core.GeneratorBasedBuilder):
         def _parse_example(episode_path):
             # load raw data --> this should change for your dataset
             data = np.load(episode_path, allow_pickle=True)     # this is a list of dicts in our case
-
+            language_embedding = None
+            
             # assemble episode --> here we're assuming demos so we set reward to 1 at the end
             episode = []
             for i, step in enumerate(data):
                 # compute Kona language embedding
-                language_embedding = self._embed([step['language_instruction']])[0].numpy()
+                if language_embedding is None:  # Optimize speed of metaworld
+                    language_embedding = self._embed([step['language_instruction']])[0].numpy()
 
                 episode.append({
                     'observation': {
@@ -145,5 +148,5 @@ class Metaworld(tfds.core.GeneratorBasedBuilder):
         """Define data splits."""
         return {
             'train': self._generate_examples(path='data/train/episode_*.npy'),
-            # 'val': self._generate_examples(path='data/val/episode_*.npy'),
+            'test': self._generate_examples(path='data/test/episode_*.npy'),
         }
