@@ -39,7 +39,7 @@ class Metaworld(tfds.core.GeneratorBasedBuilder):
                             doc='Wrist camera RGB observation.',
                         ),
                         'state': tfds.features.Tensor(
-                            shape=(39,),
+                            shape=(4,),
                             dtype=np.float32,
                             doc='Robot state, consists of [18x robot curr_obs, '
                                 '18x robot prev_obs, 3x robot pos_goal].',
