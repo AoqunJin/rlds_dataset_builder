@@ -41,7 +41,7 @@ def collect_episode(env, policy, instruction, episode_length, path):
         episode.append({
             'image': np.asarray(env.render(), dtype=np.uint8),  # Image uint8
             'wrist_image': np.asarray(np.random.rand(256, 256, 3) * 255, dtype=np.uint8),  # Placeholder wrist image
-            'state': np.asarray(obs, dtype=np.float32),  # State from the environment
+            'state': np.asarray(obs[:4], dtype=np.float32),  # State from the environment
             'action': np.asarray(action, dtype=np.float32),  # Action taken
             # 'reward': np.asarray(reward, dtype=np.float32),  # Reward received
             'language_instruction': instruction,  # Dummy language instruction
