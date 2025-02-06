@@ -25,7 +25,8 @@ os.makedirs(TRAIN_DIR, exist_ok=True)
 os.makedirs(TEST_DIR, exist_ok=True)
 
 # Initialize Metaworld environments
-benchmark = _env_dict.ML45_V2  # Construct the benchmark
+# ML10_V2 | ML45_V2
+benchmark = _env_dict.ML10_V2  # Construct the benchmark
 
 def collect_episode(env, policy, instruction, episode_length, path):
     """Collect data for a single episode and save it as an .npy file."""
@@ -50,7 +51,7 @@ def collect_episode(env, policy, instruction, episode_length, path):
         obs = next_obs
         if info['success']: break
 
-    np.save(path, episode)
+    np.savez_compressed(path, episode=episode)
 
 def collect_data(envs, env_names, num_episodes, save_dir, episode_length):
     """Collect and save data for multiple episodes."""

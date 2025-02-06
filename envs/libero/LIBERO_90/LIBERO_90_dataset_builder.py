@@ -15,8 +15,8 @@ def _generate_examples(paths) -> Iterator[Tuple[str, Any]]:
     """Yields episodes for list of data paths."""
     # the line below needs to be *inside* generate_examples so that each worker creates it's own model
     # creating one shared model outside this function would cause a deadlock
-    # _embed = hub.load("https://tfhub.dev/google/universal-sentence-encoder-large/5")
-    _embed = hub.load("/path/to/models/universal-sentence-encoder-tensorflow2-large-v2")
+    _embed = hub.load("https://tfhub.dev/google/universal-sentence-encoder-large/5")
+    # _embed = hub.load("/path/to/models/universal-sentence-encoder-tensorflow2-large-v2")
     
     def _parse_example(episode_path, demo_id):
         # load raw data
